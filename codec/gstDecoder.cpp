@@ -538,6 +538,17 @@ bool gstDecoder::buildLaunchStr()
 
 		mOptions.deviceType = videoOptions::DEVICE_IP;
 	}
+	else if( uri.protocol == "rtmp" )
+	{
+		ss << "rtspsrc location=" << uri.string;
+		//ss << " latency=200 drop-on-latency=true";
+		ss << " ! queue ! ";
+		ss << " flvdemux ! ";
+		if( mOptions.codec == videoOptions::CODEC_H264 )
+			ss << "rtph264depay ! h264parse ! ";
+
+		mOptions.deviceType = videoOptions::DEVICE_IP;
+	}
 	else
 	{
 		LogError(LOG_GSTREAMER "gstDecoder -- unsupported protocol (%s)\n", uri.protocol.c_str());
@@ -545,7 +556,8 @@ bool gstDecoder::buildLaunchStr()
 		LogError(LOG_GSTREAMER "                 * file://\n");
 		LogError(LOG_GSTREAMER "                 * rtp://\n");
 		LogError(LOG_GSTREAMER "                 * rtsp://\n");
-
+		LogError(LOG_GSTREAMER "                 * rtmp://\n");
+		
 		return false;
 	}
 
